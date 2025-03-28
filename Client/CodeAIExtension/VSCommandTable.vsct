@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
+
+	<Commands package="CodeAIExtension">
+		<Groups>
+			<Group guid="CodeAIExtension" id="MyMenuGroup" priority="0x0600">
+				<Parent guid="VSMainMenu" id="Edit"/>
+			</Group>
+		</Groups>
+
+		<!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+		<Buttons>
+			<Button guid="CodeAIExtension" id="CodeCommand" priority="0x0100" type="Button">
+				<Parent guid="CodeAIExtension" id="MyMenuGroup" />
+				<Icon guid="ImageCatalogGuid" id="PasteAppend" />
+				<CommandFlag>IconIsMoniker</CommandFlag>
+				<Strings>
+					<ButtonText>Add xml doc</ButtonText>
+					<LocCanonicalName>.Edit.CodeAIExtension</LocCanonicalName>
+				</Strings>
+			</Button>
+			<Button guid="CodeAIExtension" id="ChatCommand" priority="0x0100" type="Button">
+				<Parent guid="CodeAIExtension" id="MyMenuGroup" />
+				<Icon guid="ImageCatalogGuid" id="PasteAppend" />
+				<CommandFlag>IconIsMoniker</CommandFlag>
+				<Strings>
+					<ButtonText>Code</ButtonText>
+					<LocCanonicalName>.Edit.CodeAIExtension</LocCanonicalName>
+				</Strings>
+			</Button>
+			<Button guid="CodeAIExtension" id="AddXmlDocCommand" priority="0x0100" type="Button">
+				<Parent guid="CodeAIExtension" id="MyMenuGroup" />
+				<Icon guid="ImageCatalogGuid" id="PasteAppend" />
+				<CommandFlag>IconIsMoniker</CommandFlag>
+				<Strings>
+					<ButtonText>Chat</ButtonText>
+					<LocCanonicalName>.Edit.CodeAIExtension</LocCanonicalName>
+				</Strings>
+			</Button>
+		</Buttons>
+	</Commands>
+
+	<Symbols>
+		<GuidSymbol name="CodeAIExtension" value="{3500c4f2-3228-422d-b47c-fce05c16fc62}">
+			<IDSymbol name="MyMenuGroup" value="0x0001" />
+			<IDSymbol name="CodeCommand" value="0x0100" />
+			<IDSymbol name="ChatCommand" value="0x0200" />
+			<IDSymbol name="AddXmlDocCommand" value="0x0300" />
+		</GuidSymbol>
+	</Symbols>
+</CommandTable>
