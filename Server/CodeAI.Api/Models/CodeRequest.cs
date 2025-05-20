@@ -2,8 +2,21 @@
 
 namespace CodeAI.Api.Models;
 
-public record CodeRequest(
-    [Required(ErrorMessage = "Prompt is required")]
-    string Prompt,
+public sealed class CodeRequest
+{
+    [Required, MinLength(4), MaxLength(2_048)]
+    public string Prompt { get; init; } = default!;
 
-    string Context = "");
+    [MaxLength(100_000)]
+    public string? Context { get; init; }
+
+    [Required, RegularExpression(@"^[a-z0-9\+\#]+$",
+              ErrorMessage = "Unexpected language id")]
+    public string Language { get; init; } = "csharp";
+
+    [Range(0, 1)]
+    public double Temperature { get; init; } = 0.2;
+
+    [Range(16, 4_096)]
+    public int MaxTokens { get; init; } = 512;
+}

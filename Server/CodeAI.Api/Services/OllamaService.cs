@@ -1,112 +1,87 @@
-﻿namespace CodeAI.Api.Services;
+﻿using CodeAI.Api.Exceptions;
 
-public class OllamaService : IAIService
+namespace CodeAI.Api.Services;
+
+public sealed class OllamaService : IAIService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _config;
+    private const string Endpoint = "api/generate";
 
-    public OllamaService(HttpClient httpClient, IConfiguration config)
+    private readonly HttpClient _http;
+    private readonly string _modelCode;
+    private readonly string _modelInstruct;
+    private readonly double _temperature;
+    private readonly int _maxTokens;
+
+    public OllamaService(HttpClient httpClient, IConfiguration cfg)
     {
-        _httpClient = httpClient;
-        _config = config;
+        _http = httpClient;
 
-        _httpClient.BaseAddress = new Uri(_config["Ollama:BaseUrl"]!);
+        var root = cfg.GetSection("Ollama");
+        _http.BaseAddress = new Uri(root["BaseUrl"]!);
+
+        _modelCode = root["Model"] ?? "codellama";
+        _modelInstruct = root["ModelInstruct"] ?? _modelCode;
+        _temperature = root.GetValue("Temperature", 0.2);
+        _maxTokens = root.GetValue("MaxTokens", 512);
     }
 
-    public async Task<string> GenerateCodeAsync(string prompt, string context, CancellationToken ct)
+    public Task<string> GenerateCodeAsync(
+        string prompt, string? context, string language, CancellationToken ct) =>
+        GenerateAsync(_modelCode, BuildPlainPrompt(prompt, context, language), ct);
+
+    public Task<string> GenerateCodeForChatAsync(
+        string prompt, string? context, string language, CancellationToken ct) =>
+        GenerateAsync(_modelInstruct, BuildChatPrompt(prompt, context, language), ct);
+
+    public Task<string> GenerateXmlDocAsync(
+        string prompt, string? context, string language, CancellationToken ct) =>
+        GenerateAsync(_modelInstruct, BuildXmlDocPrompt(prompt, context, language), ct);
+
+    private async Task<string> GenerateAsync(string model, string prompt, CancellationToken ct)
     {
-        try
+        var payload = new
         {
-            var request = new
-            {
-                model = _config["Ollama:Model"],
-                prompt = prompt,
+            model,
+            prompt,
+            stream = false,
+            options = new { temperature = _temperature, max_tokens = _maxTokens }
+        };
 
-                stream = false,
-                options = new
-                {
-                    temperature = _config.GetValue<double>("Ollama:Temperature"),
-                    max_tokens = _config.GetValue<int>("Ollama:MaxTokens")
-                }
-            };
+        var resp = await _http.PostAsJsonAsync(Endpoint, payload, ct);
+        if (!resp.IsSuccessStatusCode)
+            throw new AiServiceException($"Ollama returned {(int)resp.StatusCode} {resp.StatusCode}");
 
-            var result = await SendRequestAsync("api/generate", request, ct);
+        var data = await resp.Content.ReadFromJsonAsync<OllamaResponse>(cancellationToken: ct);
+        if (data is null || string.IsNullOrWhiteSpace(data.Response))
+            throw new AiServiceException("Empty response from Ollama");
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return $"Ошибка: {ex.Message}";
-        }
+        return data.Response.Trim();
     }
 
-    public async Task<string> GenerateCodeForChatAsync(string prompt, string context, CancellationToken ct)
-    {
-        try
-        {
-            var request = new
-            {
-                model = _config["Ollama:ModelInstruct"],
-                prompt = $"[INST] Напиши код на C# для: {prompt}. Контекст, который был передан в запросе: {context}.  [/INST]",
-                stream = false,
-                options = new
-                {
-                    temperature = _config.GetValue<double>("Ollama:Temperature"),
-                    max_tokens = _config.GetValue<int>("Ollama:MaxTokens")
-                }
-            };
+    private static string BuildPlainPrompt(string prompt, string? context, string lang) =>
+        string.IsNullOrWhiteSpace(context)
+            ? $"// language: {lang}\n{prompt}"
+            : $"{context}\n\n// ↓ Based on the code above ({lang}), fulfil the requirement:\n{prompt}";
 
-            var result = await SendRequestAsync("api/generate", request, ct);
+    private static string BuildChatPrompt(string prompt, string? context, string lang) =>
+        $"""
+        [INST]
+        You are a senior {lang} developer. Generate idiomatic, compilable {lang} code that fulfils the requirement below.
+        Requirement: {prompt}
+        {(string.IsNullOrWhiteSpace(context) ? "" : $"\nContext:\n{context}\n")}
+        [/INST]
+        """;
 
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return $"Ошибка: {ex.Message}";
-        }
-    }
+    private static string BuildXmlDocPrompt(string prompt, string? context, string lang) =>
+        $"""
+        [INST]
+        Add full documentation comments to the following {lang} code. 
+        Use the standard comment style of {lang} and write docs in Russian.
+        Code:
+        {prompt}
+        {(string.IsNullOrWhiteSpace(context) ? "" : $"\nContext:\n{context}")}
+        [/INST]
+        """;
 
-    public async Task<string> GenerateXmlDocAsync(string prompt, string context, CancellationToken ct)
-    {
-        try
-        {
-            var request = new
-            {
-                model = _config["Ollama:ModelInstruct"],
-                prompt = $"[INST] Напиши XML комментарии (документацию) к этому коду: {prompt}. Контекст, который был передан в запросе: {context}. [/INST]",
-                stream = false,
-                options = new
-                {
-                    temperature = _config.GetValue<double>("Ollama:Temperature"),
-                    max_tokens = _config.GetValue<int>("Ollama:MaxTokens")
-                }
-            };
-
-            var result = await SendRequestAsync("api/generate", request, ct);
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return $"Ошибка: {ex.Message}";
-        }
-    }
-
-    private async Task<string> SendRequestAsync(string url, object request, CancellationToken ct)
-    {
-        var response = await _httpClient.PostAsJsonAsync(url, request, ct);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return $"Ошибка: {response.StatusCode}";
-        }
-
-        var result = await response.Content.ReadFromJsonAsync<OllamaResponse>();
-        return result?.Response.Trim() ?? "Пустой ответ";
-    }
-
-    private class OllamaResponse
-    {
-        public string Response { get; set; } = "";
-    }
+    private sealed class OllamaResponse { public string Response { get; set; } = ""; }
 }
