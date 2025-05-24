@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CodeAI.Api.Models;
+namespace CodeAI.Api.Contracts;
 
 public sealed class CodeRequest
 {

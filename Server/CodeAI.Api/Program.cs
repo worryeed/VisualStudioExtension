@@ -106,7 +106,7 @@ public class Program
                 bus.ConfigureEndpoints(ctx);
             });
 
-            cfg.SetDefaultRequestTimeout(s: 100);
+            cfg.SetDefaultRequestTimeout(s: 300);
         });
 
         builder.Services.AddCors(o =>
@@ -133,10 +133,12 @@ public class Program
         builder.Services.AddStackExchangeRedisCache(opt =>
             opt.Configuration = builder.Configuration.GetSection("Redis")["Configuration"]);
 
-        builder.Services.AddHttpClient<IAIService, OllamaService>();
+        builder.Services.AddHttpClient("AIService").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromMinutes(5));
+        builder.Services.AddSingleton<IAIService, OllamaService>();
         builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
         builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
         builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddSingleton<IChatHistoryStore, InMemoryChatHistoryStore>();
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();

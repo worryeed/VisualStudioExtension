@@ -1,4 +1,6 @@
-﻿namespace CodeAI.Api.Contracts;
+﻿using CodeAI.Api.Models;
+
+namespace CodeAI.Api.Contracts;
 
 public enum CodeGenKind { Code, Chat, Docs }
 
@@ -10,4 +12,5 @@ public record CodeGenRequest(
     string Language,
     double Temperature,
     int MaxTokens,
-    string? UserId);
+    string UserId,
+    List<ChatMessage>? History = null);

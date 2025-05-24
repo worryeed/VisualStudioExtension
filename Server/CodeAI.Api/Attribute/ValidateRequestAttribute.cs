@@ -1,6 +1,6 @@
-﻿using CodeAI.Api.Models;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
+using CodeAI.Api.Contracts;
 
 namespace CodeAI.Api.Attribute;
 
