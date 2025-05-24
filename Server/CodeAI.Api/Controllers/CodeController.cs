@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using CodeAI.Api.Contracts;
-using MassTransit;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 [ApiController]

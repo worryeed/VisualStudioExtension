@@ -65,6 +65,31 @@ namespace CodeAI.Api
                     };
                 });
 
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.AddPolicy("ai-requests", httpContext =>
+            {
+                var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                             ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                             ?? "anonymous";
+
+                return RateLimitPartition.GetTokenBucketLimiter(partitionKey: userId, factory: _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = 15,
+                    TokensPerPeriod = 5,
+                    ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                });
+            });
+
+            options.OnRejected = (context, token) =>
+            {
+                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                return new ValueTask();
+            };
+        });
+
             builder.Services.AddMassTransit(cfg =>
             {
                 cfg.AddConsumer<CodeGenConsumer>();  
