@@ -2,13 +2,14 @@
 
 public interface IAIService
 {
-    Task<string> GenerateCodeAsync(
+    void SetSettings(double temperature, int maxTokens);
+    Task<string> GenerateAutoCompleteAsync(
         string prompt,
         string? context,
         string language,
         CancellationToken ct);
 
-    Task<string> GenerateCodeForChatAsync(
+    Task<string> GenerateChatResponseAsync(
         string prompt,
         string? context,
         string language,

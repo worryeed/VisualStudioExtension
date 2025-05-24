@@ -15,8 +15,8 @@ public sealed class CodeRequest
     public string Language { get; init; } = "csharp";
 
     [Range(0, 1)]
-    public double Temperature { get; init; } = 0.2;
+    public double Temperature { get; init; } = 0.7;
 
     [Range(16, 4_096)]
-    public int MaxTokens { get; init; } = 512;
+    public int MaxTokens { get; init; } = 2_048;
 }
