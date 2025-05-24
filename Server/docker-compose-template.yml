@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  codeai.api:
+    build:
+      context: ./CodeAI.Api
+      dockerfile: Dockerfile
+    container_name: codeai-api
+    ports: ["5001:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=code_ai;Username=username;Password=password
+      Redis__Configuration: redis:6379,abortConnect=false
+      Ollama__BaseUrl: http://host.docker.internal:11434/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy 
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks: [backend]
+
+  # ---------- Postgres ----------
+  postgres:
+    image: postgres:16
+    container_name: codeai-postgres
+    environment:
+      POSTGRES_USER: codeai
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: code_ai
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codeai -d code_ai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ---------- Redis ----------
+  redis:
+    image: redis:7-alpine
+    container_name: codeai-redis
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ---------- RabbitMQ ----------
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: codeai-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+networks:
+  backend:
+
+volumes:
+  pgdata:
