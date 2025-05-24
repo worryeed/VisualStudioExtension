@@ -21,7 +21,7 @@ public sealed class JwtTokenService : IJwtTokenService
         var jwt = _cfg.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
 
-        var expires = int.TryParse(jwt["Expires"], out var exp) ? exp : 30;
+        var expires = int.TryParse(jwt["ExpiryDays"], out var exp) ? exp : 30;
 
         var token = new JwtSecurityToken(
             issuer: jwt["Issuer"],

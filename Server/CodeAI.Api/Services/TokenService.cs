@@ -1,11 +1,9 @@
 ﻿using CodeAI.Api.Data;
 using CodeAI.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace CodeAI.Api.Services;
 
@@ -19,54 +17,99 @@ public interface ITokenService
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _cfg;
+    private readonly IJwtTokenService _jwtToken;
     private readonly AppDbContext _db;
+    private readonly ILogger<TokenService> _logger;
     private readonly JwtSecurityTokenHandler _h = new();
 
-    public TokenService(IConfiguration cfg, AppDbContext db)
+    public TokenService(
+        IConfiguration cfg,
+        IJwtTokenService jwtToken,
+        AppDbContext db,
+        ILogger<TokenService> logger)
     {
-        _cfg = cfg; _db = db;
+        _cfg = cfg;
+        _jwtToken = jwtToken;
+        _db = db;
+        _logger = logger;
     }
 
     public string CreateAccess(AppUser u)
     {
-        var s = _cfg.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(s["Key"]!));
+        _logger.LogInformation("Creating access token for UserId={UserId}, DisplayName={Name}", u.Id, u.DisplayName);
 
-        var jwt = new JwtSecurityToken(
-            issuer: s["Issuer"],
-            audience: s["Audience"],
-            claims: new[]
+        var claims = new ClaimsPrincipal(new[]
+        {
+            new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, u.Id.ToString()),
                 new Claim(ClaimTypes.Name, u.DisplayName)
-            },
-            expires: DateTime.UtcNow.AddMinutes(s.GetValue<int>("AccessMinutes")),
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+            })
+        });
 
-        return _h.WriteToken(jwt);
+        var token = _jwtToken.Create(claims);
+        _logger.LogDebug("Access token created. TokenLength={Length}", token.Length);
+        return token;
     }
 
     public RefreshToken CreateRefresh(AppUser u)
     {
+        _logger.LogInformation("Generating refresh token for UserId={UserId}", u.Id);
+
         var days = _cfg.GetValue<int>("Refresh:Days");
-        return new RefreshToken
+        var tokenBytes = RandomNumberGenerator.GetBytes(32);
+        var tokenString = Convert.ToBase64String(tokenBytes);
+        var expires = DateTime.UtcNow.AddDays(days);
+
+        var rt = new RefreshToken
         {
             AppUserId = u.Id,
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
-            Expires = DateTime.UtcNow.AddDays(days)
+            Token = tokenString,
+            Expires = expires
         };
+
+        _logger.LogDebug(
+            "Refresh token generated. Expires={ExpiresUtc}",
+            rt.Expires.ToString("o"));
+
+        return rt;
     }
 
     public async Task<RefreshToken?> RotateAsync(string oldToken, CancellationToken ct)
     {
-        var rt = await _db.RefreshTokens.FirstOrDefaultAsync(r => r.Token == oldToken && !r.Revoked, ct);
-        if (rt is null || rt.Expires <= DateTime.UtcNow) return null;
+        _logger.LogInformation("Rotating refresh token. OldTokenHash={Hash}", oldToken.GetHashCode());
+
+        var rt = await _db.RefreshTokens
+                          .FirstOrDefaultAsync(r => r.Token == oldToken && !r.Revoked, ct);
+
+        if (rt == null)
+        {
+            _logger.LogWarning("Refresh token not found or already revoked. TokenHash={Hash}", oldToken.GetHashCode());
+            return null;
+        }
+
+        if (rt.Expires <= DateTime.UtcNow)
+        {
+            _logger.LogWarning("Refresh token expired. Expires={ExpiresUtc}", rt.Expires.ToString("o"));
+            return null;
+        }
 
         rt.Revoked = true;
-        var user = await _db.AppUsers.FindAsync(rt.AppUserId);
-        var newRt = CreateRefresh(user!);
+        _logger.LogDebug("Old refresh token revoked. TokenId={TokenId}", rt.Id);
+
+        var user = await _db.AppUsers.FindAsync(new object?[] { rt.AppUserId }, ct);
+        if (user == null)
+        {
+            _logger.LogError("User not found for AppUserId={UserId}", rt.AppUserId);
+            return null;
+        }
+
+        var newRt = CreateRefresh(user);
         _db.RefreshTokens.Add(newRt);
+
         await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("Refresh token rotated successfully. NewTokenId={NewTokenId}", newRt.Id);
+
         return newRt;
     }
 }
