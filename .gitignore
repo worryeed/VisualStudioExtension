@@ -401,8 +401,5 @@ FodyWeavers.xsd
 appsettings.json
 /Server/CodeAI.Api/Migrations
 /structure.txt
-/Server/.dockerignore
 /Server/структура.txt
 docker-compose.yml
-docker-compose.override.yml
-docker-compose.dcproj
