@@ -83,7 +83,7 @@ public sealed class OllamaService : IAIService
         CancellationToken ct = default)
     {
         (string prompt, bool raw) = PromptFactory.AutoComplete(prefix, ctx, lang);
-        return CallGenerateAsync(_modelCode, prompt, suffix: null, raw: true, ct);
+        return CallGenerateAutoCompleteAsync(_modelCode, prompt, ct);
     }
 
     public Task<string> GenerateXmlDocAsync(
@@ -93,7 +93,7 @@ public sealed class OllamaService : IAIService
         CancellationToken ct = default)
     {
         var prompt = PromptFactory.XmlDoc(question, ctx, lang);
-        return CallGenerateAsync(_modelInstruct, prompt, suffix: null, raw: false, ct);
+        return CallGenerateXmlDocAsync(_modelInstruct, prompt, ct);
     }
 
     public Task<string> GenerateChatResponseAsync(
@@ -125,27 +125,54 @@ public sealed class OllamaService : IAIService
         }
     }
 
-    private async Task<string> CallGenerateAsync(
+    private async Task<string> CallGenerateAutoCompleteAsync(
         string model,
         string prompt,
-        string? suffix,
-        bool raw,
         CancellationToken ct)
     {
-        _log.LogDebug("OLLAMA /generate  model={Model}, len={Len}, raw={Raw}", model, prompt.Length, raw);
+        _log.LogDebug("OLLAMA /generate  model={Model}, len={Len}", model, prompt.Length);
 
+        string? suffix = null;
         var body = new
         {
             model,
             prompt,
             suffix,       
-            raw,  
+            raw = true,
             stream = false,
             options = new 
             { 
                 temperature = Temperature, 
                 num_predict = MaxTokens,
                 stop = new[] { "```" }
+            }
+        };
+
+        using var resp = await _http.PostAsJsonAsync(GenerateEndpoint, body, ct);
+
+        if (!resp.IsSuccessStatusCode)
+            throw new AiServiceException($"Ollama {(int)resp.StatusCode} {resp.ReasonPhrase}");
+
+        var data = await resp.Content.ReadFromJsonAsync<OGenerateResponse>(cancellationToken: ct);
+        return Extract(data?.Response);
+    }
+
+    private async Task<string> CallGenerateXmlDocAsync(
+        string model,
+        string prompt,
+        CancellationToken ct)
+    {
+        _log.LogDebug("OLLAMA /generate  model={Model}, len={Len}", model, prompt.Length);
+
+        var body = new
+        {
+            model,
+            prompt,
+            stream = false,
+            options = new
+            {
+                temperature = Temperature,
+                num_predict = MaxTokens
             }
         };
 
