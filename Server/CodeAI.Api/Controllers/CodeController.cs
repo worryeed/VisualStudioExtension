@@ -46,7 +46,6 @@ public sealed class CodeController : ControllerBase
 
     [HttpPost("autoComplete")]
     [ValidateRequest]
-    [ResponseCache(Duration = 60)]
     [EnableRateLimiting("ai-requests")]
     [ProducesResponseType<CodeResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
@@ -65,7 +64,6 @@ public sealed class CodeController : ControllerBase
 
     [HttpPost("chat")]
     [ValidateRequest]
-    [ResponseCache(Duration = 60)]
     [EnableRateLimiting("ai-requests")]
     [ProducesResponseType<CodeResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
@@ -114,7 +112,7 @@ public sealed class CodeController : ControllerBase
         var sb = new StringBuilder();
         await foreach (var chunk in _ai.StreamChatResponseAsync(r.Prompt, r.Context, r.Language, history, ct))
         {
-            await Response.WriteAsync($"data: {chunk}\r\n\r\n", ct);
+             await Response.WriteAsync($"data: {chunk}\r\n\r\n", ct);
             await Response.Body.FlushAsync(ct);
             sb.Append(chunk);
         }
@@ -124,7 +122,7 @@ public sealed class CodeController : ControllerBase
         var answer = sb.ToString();
 
         history!.Add(new ChatMessage("AI bot", answer));
-        _chatHistoryStore.Set(userId, history);
+       _chatHistoryStore.Set(userId, history);
         Trim(history);
         await _cache.SetAsync(userKey, history, _ttl, ct);
         _chatHistoryStore.Clear(userId);
@@ -133,7 +131,6 @@ public sealed class CodeController : ControllerBase
 
     [HttpPost("docs")]
     [ValidateRequest]
-    [ResponseCache(Duration = 60)]
     [EnableRateLimiting("ai-requests")]
     [ProducesResponseType<CodeResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
