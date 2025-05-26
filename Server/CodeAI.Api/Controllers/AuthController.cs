@@ -102,10 +102,12 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(redirectUri))
         {
             _logger.LogInformation("No redirectUri provided. Returning access token in body.");
-            return Ok(new { token = access });
+            return Ok(new { token = access, refresh = refresh.Token });
         }
 
-        var url = QueryHelpers.AddQueryString(redirectUri, "token", access);
+        var url = QueryHelpers.AddQueryString(
+                  QueryHelpers.AddQueryString(redirectUri, "token", access),
+                  "refresh", refresh.Token);
         _logger.LogInformation("Redirecting to URL with token: {RedirectUrl}", url);
         return Redirect(url);
     }
