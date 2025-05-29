@@ -1,21 +1,26 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="CodeAIExtension.f4bb9e46-e323-45eb-be73-331a48016999" Version="1.0" Language="en-US" Publisher="Александр Лахов" />
-    <DisplayName>CodeAIExtension</DisplayName>
-    <Description>Empty VSIX Project.</Description>
-    <Icon>Resources\Icon.png</Icon>
-    <PreviewImage>Resources\Icon.png</PreviewImage>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-  </Installation>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
-  </Prerequisites>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-  </Assets>
+    <Metadata>
+        <Identity Id="CodeAIExtension.f4bb9e46-e323-45eb-be73-331a48016999" Version="1.0" Language="en-US" Publisher="k1sto" />
+        <DisplayName>CodeAIExtension</DisplayName>
+        <Description xml:space="preserve">Empty VSIX Project.</Description>
+        <Icon>Resources\Icon.png</Icon>
+        <PreviewImage>Resources\Icon.png</PreviewImage>
+    </Metadata>
+    <Installation AllUsers="true"> 
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="CodeAIExtension.dll" />
+		<Asset Type="Microsoft.VisualStudio.Assembly" Path="UriHandler\CodeAiUriHandler.exe" />
+        <Asset Type="Microsoft.VisualStudio.ToolWindow" Path="CodeAIExtension.dll" />
+		<Asset Type="Microsoft.VisualStudio.ContentManifest" Path="UriHandler.json" d:Source="Project" />
+		<Asset Type="Microsoft.VisualStudio.VsixManifestInjection" Path="UriHandler.json" d:Source="File"/>
+    </Assets>
 </PackageManifest>
