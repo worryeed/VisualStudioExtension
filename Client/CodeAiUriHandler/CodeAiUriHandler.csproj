@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <OutputType>WinExe</OutputType>
+	  <PublishTrimmed>false</PublishTrimmed>
+	  <SelfContained>true</SelfContained>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <TargetFramework>net8.0-windows</TargetFramework>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
