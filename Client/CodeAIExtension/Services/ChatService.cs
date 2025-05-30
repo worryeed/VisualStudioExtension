@@ -57,7 +57,7 @@ public class ChatService : IChatService
         {
             var read = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
             if (read == 0) break;
-            
+
             var chunk = Encoding.UTF8.GetString(buffer, 0, read);
             chunk = chunk.Replace("data: ", string.Empty);
             chunk = chunk.Replace("data:[DONE]", string.Empty);

@@ -8,15 +8,15 @@ public abstract class MarkdownSegment { }
 
 public class TextSegment : MarkdownSegment
 {
-    public string Text { get; }
+    public string Text { get; set; }
     public TextSegment(string text) => Text = text;
 }
 
 public class CodeSegment : MarkdownSegment
 {
-    public string Language { get; }
-    public string Code { get; }
-    public ICommand CopyCommand { get; }
+    public string Language { get; set; }
+    public string Code { get; set;  }
+    public ICommand CopyCommand { get; set; }
 
     public CodeSegment(string lang, string code)
     {

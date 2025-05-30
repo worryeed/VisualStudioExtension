@@ -1,5 +1,6 @@
 ﻿using CodeAIExtension.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Specialized;
 using System.Windows.Controls;
 
 namespace CodeAIExtension.Views;
