@@ -1,34 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable">
 
-  <Extern href="stdidcmd.h"/>
-  <Extern href="vsshlids.h"/>
-  <Include href="KnownImageIds.vsct"/>
-  <Include href="VSGlobals.vsct"/>
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
 
-  <Commands package="CodeAIExtension">
+	<Commands package="CodeAIExtension">
 
-	  <Groups>
-		  <Group guid="CodeAIExtension" id="ToolWindowGroup" priority="0x0600">
-			  <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
-		  </Group>
-	  </Groups>
-	  <Buttons>
-		  <Button guid="CodeAIExtension" id="ShowToolWindowCmd" priority="0x0100" type="Button">
-			  <Parent guid="CodeAIExtension" id="ToolWindowGroup"/>
-			  <Icon    guid="ImageCatalogGuid" id="PasteAppend"/>
-			  <Strings>
-				  <ButtonText>Code AI Window</ButtonText>
-			  </Strings>
-		  </Button>
-	  </Buttons>
+		<Menus>
+			<Menu guid="CodeAIExtension" id="CodeAIMenu" priority="0x0100" type="Menu">
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroupParent"/>
+				<Strings>
+					<ButtonText>CodeAI</ButtonText>
+					<CommandName>CodeAI</CommandName>
+				</Strings>
+			</Menu>
+		</Menus>
 
-  </Commands>
+		<Groups>
+			<Group guid="CodeAIExtension" id="CodeAIMenuGroupParent" priority="0x0100">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+			</Group>
+			<Group guid="CodeAIExtension" id="CodeAIMenuGroup" priority="0x0100">
+				<Parent guid="CodeAIExtension" id="CodeAIMenu"/>
+			</Group>
+		</Groups>
 
-  <Symbols>
-    <GuidSymbol name="CodeAIExtension" value="{3500c4f2-3228-422d-b47c-fce05c16fc62}">
-      <IDSymbol name="ToolWindowGroup"   value="0x0001"/>
-      <IDSymbol name="ShowToolWindowCmd" value="0x0400"/>
-    </GuidSymbol>
-  </Symbols>
+		<Buttons>
+			<Button guid="CodeAIExtension" id="AuthorizeCmd" priority="0x0100" type="Button">
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup"/>
+				<Strings>
+					<ButtonText>Авторизация</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CodeAIExtension" id="ShowChatWindowCmd" priority="0x0101" type="Button">
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup"/>
+				<Strings>
+					<ButtonText>Чат CodeAI</ButtonText>
+				</Strings>
+			</Button>
+		</Buttons>
+
+	</Commands>
+
+	<Symbols>
+		<GuidSymbol name="guidSHLMainMenu" value="{d309f791-903f-11d0-9efc-00a0c911004f}">
+			<IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
+		</GuidSymbol>
+
+		<GuidSymbol name="CodeAIExtension" value="{3500c4f2-3228-422d-b47c-fce05c16fc62}">
+			<IDSymbol name="CodeAIMenuGroupParent" value="0x1150"/>
+			<IDSymbol name="CodeAIMenu" value="0x1100"/>
+			<IDSymbol name="CodeAIMenuGroup" value="0x1001"/>
+			<IDSymbol name="AuthorizeCmd" value="0x1002"/>
+			<IDSymbol name="ShowChatWindowCmd" value="0x1003"/>
+		</GuidSymbol>
+	</Symbols>
+
 </CommandTable>

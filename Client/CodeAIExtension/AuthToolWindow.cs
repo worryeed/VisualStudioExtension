@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using CodeAIExtension.Views;
+using System.Runtime.InteropServices;
 
 namespace CodeAIExtension;
 
@@ -8,8 +9,6 @@ public sealed class AuthToolWindow : ToolWindowPane
     public AuthToolWindow() : base(null)
     {
         this.Caption = "Code AI";
-        this.BitmapResourceID = 301;
-        this.BitmapIndex = 1;
         this.Content = new AuthToolWindowControl();
     }
 }

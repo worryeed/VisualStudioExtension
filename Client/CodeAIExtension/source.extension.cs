@@ -8,7 +8,7 @@ namespace CodeAIExtension
 {
     internal sealed partial class Vsix
     {
-        public const string Id = "CodeAIExtension.f4bb9e46-e323-45eb-be73-331a48016999";
+        public const string Id = "CodeAIExtension.84cedc73-9f1b-4822-9a07-7a2927ba70fb";
         public const string Name = "CodeAIExtension";
         public const string Description = @"Empty VSIX Project.";
         public const string Language = "en-US";

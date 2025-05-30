@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="CodeAIExtension.Views.ChatToolWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:CodeAIExtension.Models" 
+             xmlns:viewmodels="clr-namespace:CodeAIExtension.ViewModels" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:CodeAIExtension.ViewModels"
+             xmlns:avalonedit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
+             xmlns:DataContext="{d:DesignInstance Type=viewmodels:ChatToolWindowViewModel, IsDesignTimeCreatable=False}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/CodeAIExtension;component/Themes/GlobalStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource LightGrayBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" Margin="0,0,0,12" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Messages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource MessageBubbleStyle}"
+              Background="{Binding Model.Role, Converter={StaticResource RoleToBrush}}"
+              HorizontalAlignment="{Binding Model.Role, Converter={StaticResource RoleToAlignment}}"
+              Padding="8" Margin="4">
+                            <ItemsControl ItemsSource="{Binding Segments}">
+                                <ItemsControl.Resources>
+                                    <DataTemplate DataType="{x:Type models:TextSegment}">
+                                        <TextBlock Text="{Binding Text}"
+                         TextWrapping="Wrap"
+                         FontSize="{StaticResource FontSizeNormal}"
+                         Margin="0,4"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type models:CodeSegment}">
+                                        <Border Background="#F5F5F5" CornerRadius="4" Padding="4" Margin="0,4">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <DockPanel Grid.Row="0" Margin="0 0 0 4">
+                                                    <TextBlock Text="{Binding Language}"
+                               FontStyle="Italic"
+                               DockPanel.Dock="Left"/>
+                                                    <Button Content="Скопировать"
+                            Command="{Binding CopyCommand}"
+                            Style="{StaticResource RoundedButtonStyle}"
+                            Padding="2,0"
+                            DockPanel.Dock="Right"/>
+                                                </DockPanel>
+                                                <avalonedit:TextEditor Grid.Row="1"
+                                                                       Text="{Binding Code}"
+                                                                       IsReadOnly="True"
+                                                                       ShowLineNumbers="True"
+                                                                       SyntaxHighlighting="{Binding Language}"
+                                                                       FontFamily="Consolas"
+                                                                       FontSize="12"
+                                                                       HorizontalScrollBarVisibility="Auto"
+                                                                       VerticalScrollBarVisibility="Hidden"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.Resources>
+                            </ItemsControl>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+               Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+               Style="{StaticResource RoundedTextBoxStyle}"
+               MinHeight="36"
+               Margin="10"/>
+
+            <Button Grid.Column="1"
+                    Content="Отправить"
+                    Command="{Binding SendCommand}"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Height="36"
+                    MinWidth="100"
+                    Margin="0 0 10 0"/>
+        </Grid>
+    </Grid>
+</UserControl>

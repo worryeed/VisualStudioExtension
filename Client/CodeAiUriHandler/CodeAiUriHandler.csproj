@@ -1,12 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <LangVersion>10.0</LangVersion>
 	  <OutputType>WinExe</OutputType>
 	  <PublishTrimmed>false</PublishTrimmed>
-	  <SelfContained>true</SelfContained>
-	  <PublishSingleFile>true</PublishSingleFile>
-	  <TargetFramework>net8.0-windows</TargetFramework>
+	  <TargetFramework>net48</TargetFramework>
 	  <ImplicitUsings>enable</ImplicitUsings>
-	  <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Fody" Version="6.9.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

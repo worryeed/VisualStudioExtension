@@ -13,6 +13,9 @@ namespace CodeAIExtension
     /// </summary>
     internal sealed partial class PackageGuids
     {
+        public const string guidSHLMainMenuString = "d309f791-903f-11d0-9efc-00a0c911004f";
+        public static Guid guidSHLMainMenu = new Guid(guidSHLMainMenuString);
+
         public const string CodeAIExtensionString = "3500c4f2-3228-422d-b47c-fce05c16fc62";
         public static Guid CodeAIExtension = new Guid(CodeAIExtensionString);
     }
@@ -22,7 +25,11 @@ namespace CodeAIExtension
     /// </summary>
     internal sealed partial class PackageIds
     {
-        public const int ToolWindowGroup = 0x0001;
-        public const int ShowToolWindowCmd = 0x0400;
+        public const int IDM_VS_MENU_EXTENSIONS = 0x0091;
+        public const int CodeAIMenuGroupParent = 0x1150;
+        public const int CodeAIMenu = 0x1100;
+        public const int CodeAIMenuGroup = 0x1001;
+        public const int AuthorizeCmd = 0x1002;
+        public const int ShowChatWindowCmd = 0x1003;
     }
 }

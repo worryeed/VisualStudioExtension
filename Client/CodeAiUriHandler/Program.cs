@@ -10,16 +10,18 @@ class Program
         }
 
         var uri = args[0];
-        NamedPipeClientStream? pipe = null;
+        NamedPipeClientStream pipe = null;
 
         try
         {
             pipe = new NamedPipeClientStream(".", "CodeAiAuth", PipeDirection.Out);
             pipe.Connect(2000);
-            using var sw = new StreamWriter(pipe) { AutoFlush = true };
-            sw.WriteLine(uri);
+            using (var sw = new StreamWriter(pipe) { AutoFlush = true })
+            {
+                sw.WriteLine(uri);
 
-            Console.WriteLine("Done");
+                Console.WriteLine("Done");
+            }
         }
         catch (TimeoutException)
         {

@@ -112,7 +112,7 @@ public sealed class CodeController : ControllerBase
         var sb = new StringBuilder();
         await foreach (var chunk in _ai.StreamChatResponseAsync(r.Prompt, r.Context, r.Language, history, ct))
         {
-             await Response.WriteAsync($"data: {chunk}\r\n\r\n", ct);
+            await Response.WriteAsync($"data: {chunk}\r\n\r\n", ct);
             await Response.Body.FlushAsync(ct);
             sb.Append(chunk);
         }

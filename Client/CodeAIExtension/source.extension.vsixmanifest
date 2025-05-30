@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" ?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CodeAIExtension.f4bb9e46-e323-45eb-be73-331a48016999" Version="1.0" Language="en-US" Publisher="k1sto" />
+        <Identity Id="CodeAIExtension.84cedc73-9f1b-4822-9a07-7a2927ba70fb" Version="1.0" Language="en-US" Publisher="k1sto" />
         <DisplayName>CodeAIExtension</DisplayName>
         <Description xml:space="preserve">Empty VSIX Project.</Description>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
     </Metadata>
-    <Installation AllUsers="true"> 
+    <Installation AllUsers="true">
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
@@ -18,9 +18,10 @@
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" Path="CodeAIExtension.dll" />
-		<Asset Type="Microsoft.VisualStudio.Assembly" Path="UriHandler\CodeAiUriHandler.exe" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" Path="UriHandler\CodeAiUriHandler.exe" />
         <Asset Type="Microsoft.VisualStudio.ToolWindow" Path="CodeAIExtension.dll" />
-		<Asset Type="Microsoft.VisualStudio.ContentManifest" Path="UriHandler.json" d:Source="Project" />
-		<Asset Type="Microsoft.VisualStudio.VsixManifestInjection" Path="UriHandler.json" d:Source="File"/>
+        <Asset Type="Microsoft.VisualStudio.Vsct" d:Source="Project" Path="Menus.vsct" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Microsoft.Bcl.AsyncInterfaces.dll" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="ICSharpCode.AvalonEdit.dll" AssemblyName="ICSharpCode.AvalonEdit, Version=4.3.0.9390, Culture=neutral, PublicKeyToken=9cc39be672370310" />
     </Assets>
 </PackageManifest>

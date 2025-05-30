@@ -1,0 +1,80 @@
+<!-- Themes/GlobalStyles.xaml -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:conv="clr-namespace:CodeAIExtension.Converters">
+
+	<!-- 1. Конвертеры (инлайн) -->
+	<conv:BoolToVisibilityConverter  x:Key="BoolToVis"/>
+	<conv:InverseBoolConverter       x:Key="InverseBoolConverter"/>
+	<conv:RoleToBrushConverter       x:Key="RoleToBrush"/>
+	<conv:RoleToAlignmentConverter   x:Key="RoleToAlignment"/>
+
+	<!-- 2. Цвета и кисти -->
+	<Color   x:Key="PrimaryBlueColor">#FF007ACC</Color>
+	<Color   x:Key="LightGrayColor">  #FFF3F3F3</Color>
+	<Color   x:Key="MediumGrayColor"> #FFCCCCCC</Color>
+	<Color   x:Key="WhiteColor">       #FFFFFFFF</Color>
+
+	<SolidColorBrush x:Key="PrimaryBlueBrush"  Color="{StaticResource PrimaryBlueColor}"/>
+	<SolidColorBrush x:Key="LightGrayBrush"   Color="{StaticResource LightGrayColor}"/>
+	<SolidColorBrush x:Key="MediumGrayBrush"  Color="{StaticResource MediumGrayColor}"/>
+	<SolidColorBrush x:Key="WhiteBrush"       Color="{StaticResource WhiteColor}"/>
+
+	<!-- 3. Размеры и скругления -->
+	<sys:Double   x:Key="FontSizeNormal">14</sys:Double>
+	<sys:Double   x:Key="FontSizeLarge">  16</sys:Double>
+	<CornerRadius x:Key="DefaultCornerRadius">6</CornerRadius>
+
+	<!-- 4. Стили -->
+
+	<Style x:Key="MessageBubbleStyle" TargetType="Border">
+		<Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
+		<Setter Property="Padding"       Value="8"/>
+		<Setter Property="Margin"        Value="4"/>
+		<Setter Property="MaxWidth"      Value="450"/>
+	</Style>
+
+	<Style x:Key="RoundedTextBoxStyle" TargetType="TextBox">
+		<Setter Property="FontSize"        Value="{StaticResource FontSizeNormal}"/>
+		<Setter Property="Padding"         Value="6"/>
+		<Setter Property="BorderBrush"     Value="{StaticResource MediumGrayBrush}"/>
+		<Setter Property="BorderThickness" Value="1"/>
+		<Setter Property="Background"      Value="{StaticResource WhiteBrush}"/>
+		<Setter Property="Height"          Value="32"/>
+	</Style>
+
+	<Style x:Key="RoundedButtonStyle" TargetType="Button">
+		<Setter Property="FontSize"      Value="{StaticResource FontSizeNormal}"/>
+		<Setter Property="FontWeight"    Value="SemiBold"/>
+		<Setter Property="Foreground"    Value="White"/>
+		<Setter Property="Background"    Value="{StaticResource PrimaryBlueBrush}"/>
+		<Setter Property="Padding"       Value="8,4"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Cursor"        Value="Hand"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Border Background="{TemplateBinding Background}"
+							CornerRadius="{StaticResource DefaultCornerRadius}">
+						<ContentPresenter HorizontalAlignment="Center"
+										  VerticalAlignment="Center"/>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter Property="Background" Value="#005A9E"/>
+						</Trigger>
+						<Trigger Property="IsPressed" Value="True">
+							<Setter Property="Background" Value="#004578"/>
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Opacity" Value="0.6"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.IO;
 using System.IO.Pipes;
@@ -13,21 +14,37 @@ using System.Web;
 
 namespace CodeAIExtension.Services;
 
-public sealed class AuthService : IDisposable
+public interface IAuthService
 {
-    public bool IsAuthenticated => _jwt != null;
-    public string? Jwt => _jwt;
-    public event EventHandler? StateChanged;
+    public string? Jwt { get; }
 
-    private readonly string _backend = "https://localhost:51155";
+    bool IsAuthenticated { get; }
+
+    event EventHandler StateChanged;
+
+    void SignIn();
+
+    Task LogoutAsync();
+
+    void Dispose();
+}
+
+public sealed class AuthService : IAuthService, IDisposable
+{
+    private readonly string _backend;
     private readonly HttpClient _http;
     private string? _jwt;
     private string? _refresh;
     private readonly string _tokenPath;
     private readonly CancellationTokenSource _cts = new();
 
-    public AuthService()
+    public bool IsAuthenticated => _jwt != null;
+    public string? Jwt => _jwt;
+    public event EventHandler? StateChanged;
+
+    public AuthService(IConfiguration cfg)
     {
+        _backend = cfg.GetSection("Auth:BaseUrl").Value;
         _http = new HttpClient(new AuthHandler(this)) { BaseAddress = new Uri(_backend) };
         var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeAI");
         Directory.CreateDirectory(dir);
@@ -166,8 +183,6 @@ public sealed class AuthService : IDisposable
 
     private void OnStateChanged() => StateChanged?.Invoke(this, EventArgs.Empty);
 
-    public void Dispose() => _cts.Cancel();
-
     private class TokenPair
     {
         [JsonProperty("access")] public string? Access { get; set; }
@@ -196,4 +211,6 @@ public sealed class AuthService : IDisposable
             return rsp;
         }
     }
+
+    public void Dispose() => _cts.Cancel();
 }
