@@ -403,3 +403,4 @@ appsettings.json
 /structure.txt
 /Server/структура.txt
 docker-compose.yml
+/Client/CodeAIExtension/UriHandler/CodeAiUriHandler.exe
