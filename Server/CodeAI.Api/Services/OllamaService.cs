@@ -2,7 +2,9 @@
 using CodeAI.Api.Models;
 using CodeAI.Api.Prompts;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace CodeAI.Api.Services;
 
@@ -23,10 +25,10 @@ public interface IAIService
         CancellationToken ct);
 
     IAsyncEnumerable<string> StreamChatResponseAsync(
-        string prompt, 
+        string prompt,
         string? context,
         string language,
-        List<ChatMessage> history, 
+        List<ChatMessage> history,
         CancellationToken ct);
 
     Task<string> GenerateXmlDocAsync(
@@ -41,7 +43,7 @@ public sealed class OllamaService : IAIService
     private const string GenerateEndpoint = "/api/generate";
     private const string ChatEndpoint = "/api/chat";
 
-    private readonly string _modelCode;  
+    private readonly string _modelCode;
     private readonly string _modelInstruct;
 
     private readonly HttpClient _http;
@@ -99,7 +101,7 @@ public sealed class OllamaService : IAIService
     public Task<string> GenerateChatResponseAsync(
         string prompt,
         string? ctx,
-        string lang, 
+        string lang,
         List<ChatMessage> history,
         CancellationToken ct = default)
     {
@@ -108,15 +110,15 @@ public sealed class OllamaService : IAIService
     }
 
     public async IAsyncEnumerable<string> StreamChatResponseAsync(
-        string prompt, 
-        string? ctx, 
-        string lang, 
+        string prompt,
+        string? ctx,
+        string lang,
         List<ChatMessage> hist,
         [EnumeratorCancellation]
         CancellationToken ct = default)
     {
         var messages = PromptFactory.Chat(prompt, ctx, hist, lang);
-        await foreach(var chunk in CallChatStreamAsync(_modelInstruct, messages, ct))
+        await foreach (var chunk in CallChatStreamAsync(_modelInstruct, messages, ct))
         {
             if (!string.IsNullOrEmpty(chunk))
             {
@@ -137,12 +139,12 @@ public sealed class OllamaService : IAIService
         {
             model,
             prompt,
-            suffix,       
+            suffix,
             raw = true,
             stream = false,
-            options = new 
-            { 
-                temperature = Temperature, 
+            options = new
+            {
+                temperature = Temperature,
                 num_predict = MaxTokens,
                 stop = new[] { "```" }
             }
@@ -182,7 +184,9 @@ public sealed class OllamaService : IAIService
             throw new AiServiceException($"Ollama {(int)resp.StatusCode} {resp.ReasonPhrase}");
 
         var data = await resp.Content.ReadFromJsonAsync<OGenerateResponse>(cancellationToken: ct);
-        return Extract(data?.Response);
+        var code = RemoveCodeFences(data?.Response);
+        code = RemoveMemberTags(code);
+        return Extract(code);
     }
 
     private async Task<string> CallChatAsync(
@@ -263,6 +267,42 @@ public sealed class OllamaService : IAIService
         string.IsNullOrWhiteSpace(txt)
             ? throw new AiServiceException("Empty response from Ollama.")
             : txt.Trim();
+
+    private string? RemoveCodeFences(string? raw)
+    {
+        if (string.IsNullOrEmpty(raw))
+            return raw;
+
+        var lines = raw
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+        var sb = new StringBuilder();
+        foreach (var line in lines)
+        {
+            var trimmed = line.TrimStart();
+            if (trimmed.StartsWith("```"))
+            {
+                continue;
+            }
+
+            sb.AppendLine(line);
+        }
+
+        return sb
+            .ToString()
+            .Trim('\r', '\n');
+    }
+
+    private string? RemoveMemberTags(string? xml)
+    {
+        if (string.IsNullOrWhiteSpace(xml))
+            return xml;
+
+        string withoutOpen = Regex.Replace(xml, @"\<member\b[^>]*\>", string.Empty, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        string withoutClose = Regex.Replace(withoutOpen, @"\</member\>", string.Empty, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+        return withoutClose.Trim();
+    }
 
     private class OGenerateResponse
     {

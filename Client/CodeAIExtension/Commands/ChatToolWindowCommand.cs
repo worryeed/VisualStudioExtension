@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Design;
+﻿using CodeAIExtension.ViewModels;
+using System.ComponentModel.Design;
 using System.Threading.Tasks;
 
 namespace CodeAIExtension.Commands;

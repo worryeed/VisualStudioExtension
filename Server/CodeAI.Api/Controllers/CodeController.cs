@@ -4,7 +4,6 @@ using CodeAI.Api.Data;
 using CodeAI.Api.Models;
 using CodeAI.Api.Services;
 using MassTransit;
-using MassTransit.Internals.GraphValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
@@ -137,12 +136,7 @@ public sealed class CodeController : ControllerBase
     public async Task<ActionResult<CodeResponse>> GenerateXmlDoc(
         [FromBody] CodeRequest request, CancellationToken ct)
     {
-        var cacheKey = BuildCacheKey("docs", request);
-        if (await _cache.GetAsync<CodeResponse>(cacheKey, ct) is { } cached)
-            return cached;
-
         var resp = await SendViaQueueAsync(CodeGenKind.Docs, request, ct);
-        await _cache.SetAsync(cacheKey, resp, _ttl, ct);
         await SaveHistoryAsync(request.Prompt, resp.Code, ct);
         return resp;
     }

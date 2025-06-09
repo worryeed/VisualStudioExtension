@@ -79,7 +79,7 @@
         <Setter Property="IsReadOnlyCaretVisible"  Value="False"/>
         <Setter Property="TextWrapping"            Value="Wrap"/>
         <Setter Property="VerticalScrollBarVisibility"   Value="Disabled"/>
-        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/> 
         <Setter Property="Cursor"                  Value="IBeam"/>
         <Setter Property="IsTabStop"               Value="False"/>
     </Style>

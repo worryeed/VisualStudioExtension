@@ -1,16 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable">
-
-	<Extern href="stdidcmd.h"/>
-	<Extern href="vsshlids.h"/>
-	<Include href="KnownImageIds.vsct"/>
-	<Include href="VSGlobals.vsct"/>
+	<Extern href="stdidcmd.h" />
+	<Extern href="vsshlids.h" />
+	<Include href="KnownImageIds.vsct" />
+	<Include href="VSGlobals.vsct" />
 
 	<Commands package="CodeAIExtension">
-
 		<Menus>
 			<Menu guid="CodeAIExtension" id="CodeAIMenu" priority="0x0100" type="Menu">
-				<Parent guid="CodeAIExtension" id="CodeAIMenuGroupParent"/>
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroupParent" />
 				<Strings>
 					<ButtonText>CodeAI</ButtonText>
 					<CommandName>CodeAI</CommandName>
@@ -20,28 +18,40 @@
 
 		<Groups>
 			<Group guid="CodeAIExtension" id="CodeAIMenuGroupParent" priority="0x0100">
-				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS" />
 			</Group>
+
 			<Group guid="CodeAIExtension" id="CodeAIMenuGroup" priority="0x0100">
-				<Parent guid="CodeAIExtension" id="CodeAIMenu"/>
+				<Parent guid="CodeAIExtension" id="CodeAIMenu" />
+			</Group>
+			
+			<Group guid="CodeAIExtension" id="GenerateXmlDocGroup" priority="0x0600">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
 			</Group>
 		</Groups>
 
 		<Buttons>
 			<Button guid="CodeAIExtension" id="AuthorizeCmd" priority="0x0100" type="Button">
-				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup"/>
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup" />
 				<Strings>
 					<ButtonText>Авторизация</ButtonText>
 				</Strings>
 			</Button>
+
 			<Button guid="CodeAIExtension" id="ShowChatWindowCmd" priority="0x0101" type="Button">
-				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup"/>
+				<Parent guid="CodeAIExtension" id="CodeAIMenuGroup" />
 				<Strings>
 					<ButtonText>Чат CodeAI</ButtonText>
 				</Strings>
 			</Button>
-		</Buttons>
 
+			<Button guid="CodeAIExtension" id="GenerateXmlDocCmd" priority="0x0100" type="Button">
+				<Parent guid="CodeAIExtension" id="GenerateXmlDocGroup" />
+				<Strings>
+					<ButtonText>Сгенерировать XML-документацию</ButtonText>
+				</Strings>
+			</Button>
+		</Buttons>
 	</Commands>
 
 	<Symbols>
@@ -49,13 +59,18 @@
 			<IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
 		</GuidSymbol>
 
+		<GuidSymbol name="guidVSStd97" value="{5efc7975-14bc-11cf-9b2b-00aa00573819}">
+			<IDSymbol name="IDM_VS_CTXT_CODEWIN" value="0x0471" />
+		</GuidSymbol>
+
 		<GuidSymbol name="CodeAIExtension" value="{3500c4f2-3228-422d-b47c-fce05c16fc62}">
-			<IDSymbol name="CodeAIMenuGroupParent" value="0x1150"/>
-			<IDSymbol name="CodeAIMenu" value="0x1100"/>
-			<IDSymbol name="CodeAIMenuGroup" value="0x1001"/>
-			<IDSymbol name="AuthorizeCmd" value="0x1002"/>
-			<IDSymbol name="ShowChatWindowCmd" value="0x1003"/>
+			<IDSymbol name="CodeAIMenuGroupParent" value="0x1150" />
+			<IDSymbol name="CodeAIMenu"            value="0x1100" />
+			<IDSymbol name="CodeAIMenuGroup"       value="0x1001" />
+			<IDSymbol name="AuthorizeCmd"          value="0x1002" />
+			<IDSymbol name="ShowChatWindowCmd"     value="0x1003" />
+			<IDSymbol name="GenerateXmlDocCmd"     value="0x1004" />
+			<IDSymbol name="GenerateXmlDocGroup"   value="0x1005" />
 		</GuidSymbol>
 	</Symbols>
-
 </CommandTable>

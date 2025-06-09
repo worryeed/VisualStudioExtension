@@ -44,7 +44,7 @@ public sealed class AuthService : IAuthService, IDisposable
 
     public AuthService(IConfiguration cfg)
     {
-        _backend = cfg.GetSection("Auth:BaseUrl").Value;
+        _backend = cfg.GetSection("Auth:BaseUrl").Value!;
         _http = new HttpClient(new AuthHandler(this)) { BaseAddress = new Uri(_backend) };
         var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeAI");
         Directory.CreateDirectory(dir);
