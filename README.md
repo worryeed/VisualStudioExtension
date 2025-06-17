@@ -53,3 +53,30 @@ flowchart TD
     style VisualStudio fill:#FFFFFF,stroke:#000000,color:#000000
     style AIProcessing stroke:#000000,fill:#FFFFFF,color:#000000
     style BackendLayer stroke:#000000,fill:#FFFFFF,color:#000000
+```
+
+## Запуск серверной части
+
+1. Клонируем репозиторий:
+```bash
+  git clone https://github.com/worryeed/VisualStudioExtension.git
+  cd VisualStudioExtension
+```
+
+2. Редактируем appsettings.json указывая свои данные
+
+3. Переходим в каталог где лежит `docker-compose.yml` и поднимаем все сервисы:
+```bash
+  docker-compose up -d
+```
+
+4. Дожидаемся, пока все контейнеры запустятся. Проверить статус можно командой:
+```bash
+  docker-compose ps
+```
+
+5. API будет доступен по адресу:
+https://localhost:5001
+
+
+
